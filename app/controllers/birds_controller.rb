@@ -1,5 +1,7 @@
 class BirdsController < ApplicationController
 
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
+
   # GET /birds
   def index
     birds = Bird.all
@@ -15,44 +17,28 @@ class BirdsController < ApplicationController
   # GET /birds/:id
   def show
     bird = find_bird
-    if bird
-      render json: bird
-    else
-      render_not_found_response
-    end
+    render json: bird
   end
 
   # PATCH /birds/:id
   def update
     bird = find_bird
-    if bird
-      bird.update(bird_params)
-      render json: bird
-    else
-      render_not_found_response
-    end
+    bird.update(bird_params)
+    render json: bird
   end
 
   # PATCH /birds/:id/like
   def increment_likes
     bird = find_bird
-    if bird
-      bird.update(likes: bird.likes + 1)
-      render json: bird
-    else
-      render_not_found_response
-    end
+    bird.update(likes: bird.likes + 1)
+    render json: bird
   end
 
   # DELETE /birds/:id
   def destroy
     bird = find_bird
-    if bird
-      bird.destroy
-      head :no_content
-    else
-      render_not_found_response
-    end
+    bird.destroy
+    head :no_content
   end
 
   private
@@ -62,7 +48,7 @@ class BirdsController < ApplicationController
   end
   
   def find_bird
-    Bird.find_by(id: params[:id])
+    Bird.find(params[:id])
   end
 
   def render_not_found_response
